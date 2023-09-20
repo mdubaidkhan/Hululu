@@ -1,0 +1,413 @@
+import React, { useState } from 'react';
+
+ 
+
+const TransactionPage = () => {
+
+  const [transactionType, setTransactionType] = useState('');
+
+  const [senderAccount, setSenderAccount] = useState('');
+
+  const [receiverAccount, setReceiverAccount] = useState('');
+
+  const [amount, setAmount] = useState('');
+
+  const [transactionPassword, setTransactionPassword] = useState('');
+
+  const [remarks, setRemarks] = useState('');
+
+  const [passwordError, setPasswordError] = useState('');
+
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+
+  const [amountError, setAmountError] = useState('');
+
+  const [senderAccountError, setSenderAccountError] = useState('');
+
+  const [receiverAccountError, setReceiverAccountError] = useState('');
+
+  const [transactionTypeError, setTransactionTypeError] = useState('');
+
+  const [remarksError, setRemarksError] = useState('');
+
+  const [showPassword, setShowPassword] = useState(false); // State for showing/hiding password
+
+ 
+
+  const handleSubmit = (e) => {
+
+    e.preventDefault();
+
+ 
+
+    // Password validation logic
+
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
+
+ 
+
+    if (!passwordRegex.test(transactionPassword)) {
+
+      setPasswordError('Password must contain at least one alphabet, one digit, and one special character.');
+
+      return;
+
+    } else {
+
+      setPasswordError('');
+
+    }
+
+ 
+
+    // Validate amount
+
+    if (isNaN(amount) || parseFloat(amount) <= 0) {
+
+      setAmountError('Amount must be a positive number.');
+
+      return;
+
+    } else {
+
+      setAmountError('');
+
+    }
+
+ 
+
+    // Validate sender and receiver accounts
+
+    if (!senderAccount.trim()) {
+
+      setSenderAccountError('Sender account cannot be empty.');
+
+      return;
+
+    } else {
+
+      setSenderAccountError('');
+
+    }
+
+ 
+
+    if (!receiverAccount.trim()) {
+
+      setReceiverAccountError('Receiver account cannot be empty.');
+
+      return;
+
+    } else {
+
+      setReceiverAccountError('');
+
+    }
+
+ 
+
+    // Validate transaction type
+
+    if (!transactionType) {
+
+      setTransactionTypeError('Please select a transaction type.');
+
+      return;
+
+    } else {
+
+      setTransactionTypeError('');
+
+    }
+
+ 
+
+    // Validate remarks
+
+    if (!remarks.trim()) {
+
+      setRemarksError('Remarks cannot be empty.');
+
+      return;
+
+    } else {
+
+      setRemarksError('');
+
+    }
+
+ 
+
+    if (!acceptedTerms) {
+
+      // If terms are not accepted, show an error
+
+      alert('Please accept the terms and conditions.');
+
+      return;
+
+    }
+
+ 
+
+    // Add your transaction logic here
+
+  };
+
+ 
+
+  return (
+
+    <div className="container">
+
+      <h1>Transaction Page</h1>
+
+      <form onSubmit={handleSubmit}>
+
+        <div className="mb-3">
+
+          <label htmlFor="transactionType" className="form-label">
+
+            Type of Transaction
+
+          </label>
+
+          <select
+
+            id="transactionType"
+
+            className={`form-select ${transactionTypeError ? 'is-invalid' : ''}`}
+
+            value={transactionType}
+
+            onChange={(e) => setTransactionType(e.target.value)}
+
+          >
+
+            <option value="">Select Transaction Type</option>
+
+            <option value="neft">NEFT</option>
+
+            <option value="rtgs">RTGS</option>
+
+            <option value="imps">IMPS</option>
+
+          </select>
+
+          {transactionTypeError && (
+
+            <div className="invalid-feedback">{transactionTypeError}</div>
+
+          )}
+
+        </div>
+
+        <div className="mb-3">
+
+          <label htmlFor="senderAccount" className="form-label">
+
+            Sender Account Number
+
+          </label>
+
+          <input
+
+            type="text"
+
+            className={`form-control ${senderAccountError ? 'is-invalid' : ''}`}
+
+            id="senderAccount"
+
+            value={senderAccount}
+
+            onChange={(e) => setSenderAccount(e.target.value)}
+
+          />
+
+          {senderAccountError && (
+
+            <div className="invalid-feedback">{senderAccountError}</div>
+
+          )}
+
+        </div>
+
+        <div className="mb-3">
+
+          <label htmlFor="receiverAccount" className="form-label">
+
+            Receiver Account Number
+
+          </label>
+
+          <input
+
+            type="text"
+
+            className={`form-control ${receiverAccountError ? 'is-invalid' : ''}`}
+
+            id="receiverAccount"
+
+            value={receiverAccount}
+
+            onChange={(e) => setReceiverAccount(e.target.value)}
+
+          />
+
+          {receiverAccountError && (
+
+            <div className="invalid-feedback">{receiverAccountError}</div>
+
+          )}
+
+        </div>
+
+        <div className="mb-3">
+
+          <label htmlFor="amount" className="form-label">
+
+            Amount
+
+          </label>
+
+          <input
+
+            type="number"
+
+            className={`form-control ${amountError ? 'is-invalid' : ''}`}
+
+            id="amount"
+
+            value={amount}
+
+            onChange={(e) => setAmount(e.target.value)}
+
+          />
+
+          {amountError && (
+
+            <div className="invalid-feedback">{amountError}</div>
+
+          )}
+
+        </div>
+
+        <div className="mb-3">
+
+          <label htmlFor="transactionPassword" className="form-label">
+
+            Transaction Password
+
+          </label>
+
+          <div className="input-group">
+
+            <input
+
+              type={showPassword ? 'text' : 'password'}
+
+              className={`form-control ${passwordError ? 'is-invalid' : ''}`}
+
+              id="transactionPassword"
+
+              value={transactionPassword}
+
+              onChange={(e) => setTransactionPassword(e.target.value)}
+
+            />
+
+            <button
+
+              className="btn btn-outline-secondary"
+
+              type="button"
+
+              onClick={() => setShowPassword(!showPassword)}
+
+            >
+
+              {showPassword ? 'Hide' : 'Show'}
+
+            </button>
+
+          </div>
+
+          {passwordError && (
+
+            <div className="invalid-feedback">{passwordError}</div>
+
+          )}
+
+        </div>
+
+        <div className="mb-3">
+
+          <label htmlFor="remarks" className="form-label">
+
+            Remarks
+
+          </label>
+
+          <textarea
+
+            className={`form-control ${remarksError ? 'is-invalid' : ''}`}
+
+            id="remarks"
+
+            rows="3"
+
+            value={remarks}
+
+            onChange={(e) => setRemarks(e.target.value)}
+
+          ></textarea>
+
+          {remarksError && (
+
+            <div className="invalid-feedback">{remarksError}</div>
+
+          )}
+
+        </div>
+
+        <div className="mb-3 form-check">
+
+          <input
+
+            type="checkbox"
+
+            className="form-check-input"
+
+            id="acceptTerms"
+
+            checked={acceptedTerms}
+
+            onChange={(e) => setAcceptedTerms(e.target.checked)}
+
+          />
+
+          <label className="form-check-label" htmlFor="acceptTerms">
+
+            I accept the terms and conditions
+
+          </label>
+
+        </div>
+
+        <button type="submit" className="btn btn-primary">
+
+          Submit
+
+        </button>
+
+      </form>
+
+    </div>
+
+  );
+
+};
+
+ 
+
+export default TransactionPage;
