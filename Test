@@ -1,0 +1,71 @@
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@WebMvcTest(UserController.class) // Replace UserController with your actual controller
+public class UserControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Mock
+    private UserService userService; // Replace UserService with your user service
+
+    @InjectMocks
+    private UserController userController;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    public void testSuccessfulUserRegistration() throws Exception {
+        // Create a UserRegistrationRequest object with username, email, and password
+        UserRegistrationRequest registrationRequest = new UserRegistrationRequest("testuser", "test@example.com", "password");
+
+        // Mock the user service to return a successful response
+        when(userService.registerUser(registrationRequest)).thenReturn(new UserRegistrationResponse("User registered successfully."));
+
+        // Perform the user registration request
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(registrationRequest)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // Add more assertions as needed for the response
+        // Example: Check the response content
+        String responseBody = result.getResponse().getContentAsString();
+        UserRegistrationResponse response = objectMapper.readValue(responseBody, UserRegistrationResponse.class);
+        assertEquals("User registered successfully.", response.getMessage());
+    }
+
+    @Test
+    public void testFailedUserRegistration() throws Exception {
+        // Create a UserRegistrationRequest object with invalid data
+        UserRegistrationRequest registrationRequest = new UserRegistrationRequest("testuser", "invalidemail", "password");
+
+        // Mock the user service to return an error response
+        when(userService.registerUser(registrationRequest)).thenReturn(null);
+
+        // Perform the user registration request
+        mockMvc.perform(MockMvcRequestBuilders.post("/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(registrationRequest)))
+                .andExpect(status().isBadRequest());
+    }
+}
